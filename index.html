@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima em Casa</title>
+</head>
+<body>
+    <main class="container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <header class="clima">
+            <div class="logo" aria-hidden="true">logo</div>
+            <div>
+                <p class="eyebrow">Previsão do tempo</p>
+                <h1>Clima em Casa</h1>             
+                <p class="description">Bem-vindo ao Clima em Casa! Aqui você pode verificar a previsão do tempo para sua cidade.
+                    </p>
+             </div> 
+        </header>
+       
+        <section class="weather-section">
+            <div class="weather-icon" aria-hidden="true">☀️
+                </div>
+                <p class="weather-description">Sua cidade</p>
+            <h2>Verifique o Clima</h2>
+            </div>
+            <span class="temperature">Temperatura: --°C</span>
+        </div>
+        <div id="weatherDetails" class="weather-details"></div>
+
+      <p class="error-message" role="alert" hidden>
+        Não foi possível carregar a previsão do tempo agora. Tente novamente mais tarde.
+      </p>
+
+      <p class="loading-indicator" role="status">
+        <span class="loading-indicator__dot" aria-hidden="true"></span>
+        Preparando a previsão do tempo...
+            </section>
+            </main>
+
+        <form id="weatherForm">
+            <label for="city">Digite o nome da cidade:</label>
+            <input type="text" id="city" name="city" required>
+            <button type="submit">Verificar Clima</button>
+        </form>
+        <div id="weatherResult"></div>
+        <div id="errorMessage" style="color: red;"></div>
+    
+
+
+    <script src="script.js"></script>
+</body>
+</html>
