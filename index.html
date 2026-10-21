@@ -1,52 +1,266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+        content="Consulte o clima atual, a previsão de 15 dias e o histórico meteorológico da sua cidade.">
     <title>Clima em Casa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <main class="container" style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <header class="clima">
-            <div class="logo" aria-hidden="true">logo</div>
-            <div>
-                <p class="eyebrow">Previsão do tempo</p>
-                <h1>Clima em Casa</h1>             
-                <p class="description">Bem-vindo ao Clima em Casa! Aqui você pode verificar a previsão do tempo para sua cidade.
-                    </p>
-             </div> 
-        </header>
-       
-        <section class="weather-section">
-            <div class="weather-icon" aria-hidden="true">☀️
-                </div>
-                <p class="weather-description">Sua cidade</p>
-            <h2>Verifique o Clima</h2>
+
+<body class="phase-one-static">
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="Navegação principal">
+            <a class="sidebar-brand" href="./" aria-label="Clima em Casa, início">
+                <span class="brand-mark" aria-hidden="true">☀</span>
+                <span class="sidebar-brand-name">Clima <strong>em Casa</strong></span>
+            </a>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Menu</p>
+                <a class="nav-item is-active" href="#overview">
+                    <span class="nav-icon" aria-hidden="true">⌂</span>
+                    <span>Visão geral</span>
+                </a>
+                <a class="nav-item" href="#forecast">
+                    <span class="nav-icon" aria-hidden="true">☷</span>
+                    <span>Previsão de 15 dias</span>
+                </a>
+                <a class="nav-item" href="#history">
+                    <span class="nav-icon" aria-hidden="true">◷</span>
+                    <span>Histórico</span>
+                </a>
+                <a class="nav-item" href="#insights">
+                    <span class="nav-icon" aria-hidden="true">⌁</span>
+                    <span>Informações</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <span class="sidebar-sun" aria-hidden="true">☼</span>
+                <p>Dados confiáveis<br><strong>para o seu dia.</strong></p>
             </div>
-            <span class="temperature">Temperatura: --°C</span>
-        </div>
-        <div id="weatherDetails" class="weather-details"></div>
+        </aside>
 
-      <p class="error-message" role="alert" hidden>
-        Não foi possível carregar a previsão do tempo agora. Tente novamente mais tarde.
-      </p>
+        <main class="dashboard">
+            <header class="dashboard-header" id="overview">
+                <div class="header-topline">
+                    <div class="welcome">
+                    <p class="eyebrow">Clima em Casa</p>
+                    <h1 id="greeting">Bom dia!</h1>
+                    <p class="header-date" id="currentDate">Confira o céu e planeje seu dia.</p>
+                    </div>
+                    <div class="header-location" aria-live="polite">
+                        <span aria-hidden="true">⌖</span>
+                        <div><strong id="headerLocationName">Sua cidade</strong><small id="headerLocationMeta">Selecione uma localização</small></div>
+                    </div>
+                </div>
 
-      <p class="loading-indicator" role="status">
-        <span class="loading-indicator__dot" aria-hidden="true"></span>
-        Preparando a previsão do tempo...
+                <form id="weatherForm" class="search-form" novalidate>
+                    <label class="sr-only" for="city">Nome da cidade</label>
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input id="city" name="city" type="search" autocomplete="address-level2"
+                        placeholder="Pesquisar cidade..." required>
+                    <button type="submit">Pesquisar <span aria-hidden="true">→</span></button>
+                </form>
+                <label class="legacy-theme-control" for="themeSelect">
+                    <span aria-hidden="true">◐</span>
+                    <span class="sr-only">Tema visual</span>
+                    <select id="themeSelect" aria-label="Escolha o tema visual">
+                        <option value="auto">Automático</option>
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                    </select>
+                </label>
+                <div class="theme-control" role="group" aria-label="Tema visual">
+                    <button type="button" class="theme-option" data-theme-option="light" aria-label="Tema claro" aria-pressed="false">Sol</button>
+                    <button type="button" class="theme-option" data-theme-option="dark" aria-label="Tema escuro" aria-pressed="false">Lua</button>
+                    <button type="button" class="theme-option" data-theme-option="auto" aria-label="Tema automático" aria-pressed="false">Auto</button>
+                </div>
+                <div class="header-controls-row">
+                    <span class="appearance-label"><span aria-hidden="true">◌</span> Aparência</span>
+                    <button id="refreshButton" class="header-refresh" type="button">↻ Atualizar</button>
+                </div>
+                <div id="searchResults" class="search-results" aria-live="polite"></div>
+            </header>
+
+            <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+            <div id="errorMessage" class="alert" role="alert" hidden></div>
+
+            <section id="weatherContent" class="weather-dashboard" hidden aria-label="Dados meteorológicos">
+                <div class="location-row">
+                    <div>
+                        <p class="eyebrow">Sua localização</p>
+                        <h2 id="locationName">—</h2>
+                        <p id="locationMeta" class="muted">—</p>
+                    </div>
+                    <button id="locationRefreshButton" class="refresh-button" type="button">
+                        <span aria-hidden="true">↻</span> <span>Atualizar</span>
+                    </button>
+                </div>
+
+                <section class="forecast-strip" aria-labelledby="stripTitle">
+                    <div class="strip-heading">
+                        <div>
+                            <p class="eyebrow">Próximos dias</p>
+                            <h2 id="stripTitle">Sua semana</h2>
+                        </div>
+                        <span class="section-tag">Inclui hoje</span>
+                    </div>
+                    <div class="forecast-scroller">
+                        <button class="forecast-nav forecast-nav--previous" type="button" aria-label="Dias anteriores">‹</button>
+                        <div id="forecastGrid" class="forecast-grid"></div>
+                        <button class="forecast-nav forecast-nav--next" type="button" aria-label="Próximos dias">›</button>
+                    </div>
+                </section>
+
+                <div class="dashboard-columns">
+                    <div class="dashboard-main">
+                        <section class="current-card" aria-labelledby="currentTitle">
+                            <div id="weatherAnimation" class="weather-animation" aria-hidden="true"></div>
+                            <div class="current-card-top">
+                                <div>
+                                    <p class="current-kicker">Clima agora</p>
+                                    <p class="current-place" id="currentPlace">—</p>
+                                </div>
+                                <span class="current-updated" id="currentUpdated">—</span>
+                            </div>
+                            <div class="current-weather-main">
+                                <span id="currentIcon" class="weather-icon" aria-hidden="true">☀️</span>
+                                <div class="current-temperature">
+                                    <span id="currentTemperature">—</span><sup>°C</sup>
+                                    <h2 id="currentTitle">—</h2>
+                                    <p>Sensação de <strong id="feelsLike">—</strong>°C</p>
+                                </div>
+                            </div>
+                            <div class="current-metrics" aria-label="Detalhes do clima atual">
+                                <div><span>Umidade</span><strong id="humidity">—</strong></div>
+                                <div><span>Vento</span><strong id="wind">—</strong></div>
+                                <div><span>Precipitação</span><strong id="precipitation">—</strong></div>
+                            </div>
+                        </section>
+
+                        <section class="insights-section" id="insights" aria-labelledby="insightsTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Detalhes do dia</p>
+                                    <h2 id="insightsTitle">Mais informações</h2>
+                                </div>
+                            </div>
+                            <div class="insights-grid">
+                                <article class="insight-card insight-card--pink">
+                                    <span class="insight-icon" aria-hidden="true">↕</span>
+                                    <div><span>Temperatura</span><strong id="temperatureRange">—</strong><small>máxima / mínima</small></div>
+                                </article>
+                                <article class="insight-card insight-card--orange">
+                                    <span class="insight-icon" aria-hidden="true">☂</span>
+                                    <div><span>Chance de chuva</span><strong id="rainChance">—</strong><small>probabilidade hoje</small></div>
+                                </article>
+                                <article class="insight-card insight-card--lavender">
+                                    <span class="insight-icon" aria-hidden="true">◒</span>
+                                    <div><span>Luz do dia</span><strong id="sunHours">—</strong><small>nascer — pôr do sol</small></div>
+                                </article>
+                            </div>
+                        </section>
+
+                        <section class="charts-section" aria-labelledby="chartsTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Tendências</p>
+                                    <h2 id="chartsTitle">Variação dos próximos dias</h2>
+                                </div>
+                                <span class="chart-legend"><i class="legend-max"></i> Máxima <i class="legend-min"></i> Mínima</span>
+                            </div>
+                            <div class="charts-grid">
+                                <article class="chart-card">
+                                    <h3>Temperaturas</h3>
+                                    <div id="temperatureChart" class="chart" role="img" aria-label="Gráfico de temperaturas máximas e mínimas"></div>
+                                </article>
+                                <article class="chart-card precipitation-chart-card">
+                                    <h3>Precipitação diária</h3>
+                                    <div id="precipitationChart" class="chart" role="img" aria-label="Gráfico de precipitação diária"></div>
+                                </article>
+                                <article class="moon-card" aria-labelledby="moonTitle">
+                                    <div class="moon-card-heading">
+                                        <div><p class="eyebrow">Calendário lunar</p><h3 id="moonTitle">Lua de hoje</h3></div>
+                                        <span class="moon-illumination" id="moonIllumination">—</span>
+                                    </div>
+                                    <div id="moonIllustration" class="moon-illustration" role="img" aria-label="Fase atual da Lua"></div>
+                                    <strong id="moonPhaseName" class="moon-phase-name">Dados indisponíveis</strong>
+                                    <p id="moonNextPhase" class="moon-next-phase">Não foi possível consultar as fases lunares.</p>
+                                    <div id="moonPhaseOptions" class="moon-phase-options" aria-label="Próximas fases principais"></div>
+                                </article>
+                            </div>
+                        </section>
+
+                        <section class="full-forecast-section" id="forecast" aria-labelledby="fullForecastTitle">
+                            <div class="section-heading">
+                                <div>
+                                    <p class="eyebrow">Visão completa</p>
+                                    <h2 id="fullForecastTitle">Previsão de 15 dias</h2>
+                                </div>
+                                <span class="section-tag">Selecione um dia</span>
+                            </div>
+                            <div id="fullForecastGrid" class="full-forecast-grid"></div>
+                        </section>
+                    </div>
+                </div>
+
+                <section class="history-section" id="history" aria-labelledby="historyTitle">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Dias que passaram</p>
+                            <h2 id="historyTitle">Histórico observado</h2>
+                        </div>
+                        <span class="section-tag observed">Últimos 5 dias</span>
+                    </div>
+                    <div id="historyGrid" class="history-grid"></div>
+                </section>
             </section>
-            </main>
+        </main>
+    </div>
 
-        <form id="weatherForm">
-            <label for="city">Digite o nome da cidade:</label>
-            <input type="text" id="city" name="city" required>
-            <button type="submit">Verificar Clima</button>
-        </form>
-        <div id="weatherResult"></div>
-        <div id="errorMessage" style="color: red;"></div>
-    
+    <div id="dayDetailsModal" class="day-modal" hidden>
+        <div class="day-modal-backdrop" data-close-details></div>
+        <section class="day-dialog" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+            <button class="day-dialog-close" type="button" aria-label="Fechar detalhes" data-close-details>×</button>
+            <div class="dialog-heading">
+                <div>
+                    <p class="eyebrow">Detalhes da previsão</p>
+                    <h2 id="detailsTitle">—</h2>
+                    <p id="detailsDescription" class="muted">—</p>
+                </div>
+                <span id="detailsIcon" class="dialog-icon" aria-hidden="true">☀️</span>
+            </div>
+            <div class="dialog-summary">
+                <strong id="detailsTemperature">—</strong>
+                <span id="detailsRain">—</span>
+                <span id="detailsPrecipitation">—</span>
+            </div>
+            <dl class="dialog-metrics">
+                <div><dt>Sensação máxima</dt><dd id="detailsFeelsLike">—</dd></div>
+                <div><dt>Vento</dt><dd id="detailsWind">—</dd></div>
+                <div><dt>Umidade</dt><dd id="detailsHumidity">—</dd></div>
+                <div><dt>Nascer / pôr do sol</dt><dd id="detailsSun">—</dd></div>
+            </dl>
+            <div class="hourly-heading"><h3>Evolução ao longo do dia</h3><span>Dados horários</span></div>
+            <div id="hourlyTemperatureChart" class="hourly-chart" role="img" aria-label="Gráfico horário de temperatura"></div>
+            <p id="detailsUnavailable" class="details-unavailable" hidden>Dados horários não disponíveis para esta data.</p>
+        </section>
+    </div>
 
-
-    <script src="script.js"></script>
+    <footer class="site-footer">
+        <p>Dados meteorológicos por <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
+            · Projeto educativo Clima em Casa</p>
+    </footer>
+    <script src="js/script.js" defer></script>
 </body>
+
 </html>
